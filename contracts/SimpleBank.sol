@@ -11,7 +11,6 @@ contract SimpleBank {
     /* State variables
      */
     
-    
     // Fill in the visibility keyword. 
     // Hint: We want to protect our users balance from other contracts
     mapping (address => uint) private balances ;
@@ -36,7 +35,7 @@ contract SimpleBank {
 
     // Create an event called LogWithdrawal
     // Hint: it should take 3 arguments: an accountAddress, withdrawAmount and a newBalance 
-    event LogWithdrawal(address accountAddress, uint amount, uint newBalance);
+    event LogWithdrawal(address accountAddress, uint withdrawAmount, uint newBalance);
 
     /* Functions
      */
@@ -94,12 +93,19 @@ contract SimpleBank {
       // Subtract the amount from the sender's balance, and try to send that amount of ether
       // to the user attempting to withdraw. 
       // return the user's balance.
-
+      require(enrolled[msg.sender] == true);
+      require(balances[msg.sender] >= withdrawAmount);
       // 1. Use a require expression to guard/ensure sender has enough funds
-
+      msg.sender.call.value(withdrawAmount);
       // 2. Transfer Eth to the sender and decrement the withdrawal amount from
       //    sender's balance
-
+      balances[msg.sender] -= withdrawAmount;
       // 3. Emit the appropriate event for this message
+      emit LogWithdrawal(
+        msg.sender,
+        withdrawAmount,
+        balances[msg.sender]
+    );
+          return balances[msg.sender];
     }
 }
